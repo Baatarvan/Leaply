@@ -1,0 +1,43 @@
+@import './main.scss';
+
+.container.loginContainer {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  .btn {
+    display: block;
+    margin: 0 auto;
+    background-color: var(--primary-color);
+  }
+
+  .input-field {
+    input {
+      color: black;
+      &:focus {
+        border-bottom: 1px solid var(--primary-color) !important;
+        box-shadow: 0 1px 0 0 var(--primary-color) !important;
+      }
+      &::placeholder {
+        color: var(--primary-color);
+      }
+    }
+  }
+  .gap {
+    margin-bottom: 30px;
+  }
+
+  .card-panel {
+    width: 400px !important;
+
+    .password {
+      cursor: pointer;
+      color: var(--primary-color) !important;
+    }
+  }
+
+  .Create {
+    cursor: pointer;
+  }
+}
