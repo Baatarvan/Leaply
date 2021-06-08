@@ -1,8 +1,7 @@
 import '../styles/profileComponent.scss';
 
 const profileComponent = (props) => {
-  const { icon } = props;
-  const { placeholder } = props;
+  const { icon, placeholder, className, name, type, value, onChange } = props;
 
   return (
     <div>
@@ -12,7 +11,14 @@ const profileComponent = (props) => {
             <i className='material-icons'>{icon}</i>
           </div>
           <div className='input-field col s11'>
-            <input placeholder={placeholder} type='text' className='validate' />
+            <input
+              name={name}
+              placeholder={placeholder}
+              type={type}
+              className={className}
+              value={value}
+              onChange={onChange}
+            />
           </div>
         </form>
       </div>

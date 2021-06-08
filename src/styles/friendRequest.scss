@@ -10,6 +10,8 @@
 
   .btn {
     display: inline-block !important;
+    border: none;
+    outline: none;
     &.accept {
       background-color: var(--primary-color) !important;
     }

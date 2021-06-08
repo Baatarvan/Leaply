@@ -13,10 +13,14 @@ const friendRequest = () => {
           />
           <span className='title'>Fullname</span>
           <p>bio</p>
-          <a href='#!' className='secondary-content'>
-            <a className='waves-effect waves-light btn accept'>Accept</a>
-            <a className='waves-effect waves-light btn reject'>Reject</a>
-          </a>
+          <div className='secondary-content'>
+            <button className='waves-effect waves-light btn accept'>
+              Accept
+            </button>
+            <button className='waves-effect waves-light btn reject'>
+              Reject
+            </button>
+          </div>
         </li>
       </ul>
     </div>

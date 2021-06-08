@@ -1,46 +1,122 @@
 import '../styles/login.scss';
 
 import { useState, useEffect } from 'react';
-import firebase, { firestore, auth } from '../firebase';
+import firebase, { auth, firestore } from '../firebase';
+import { useHistory } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({ user }) => {
   const [input, setInput] = useState('');
   const [confirmCode, setConfirmCode] = useState('');
   const [sentcode, setSentCode] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const history = useHistory();
 
   useEffect(() => {
-    // window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-    //   'sign-in-button',
-    //   {}
-    // );
+    if (user) {
+      history.push('/home');
+    }
+  }, [user, history]);
+
+  // Recapcha
+
+  useEffect(() => {
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+      'sign-in-button',
+      {}
+    );
   }, []);
 
   const sendConfirmCode = async () => {
-    setLoading(true);
     const appVerifier = window.recaptchaVerifier;
-    console.log(appVerifier);
     try {
-      window.confirmationResult = await auth.signInwithPhoneNumber(
-        `976${input}`,
+      window.confirmationResult = await auth.signInWithPhoneNumber(
+        `+976 ${input}`,
         appVerifier
       );
       setSentCode(true);
     } catch (e) {
       console.log(e);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const login = async () => {
+  const verification = async () => {
     try {
       const user = await window.confirmationResult.confirm(confirmCode);
+      if (user) {
+        firestore
+          .collection('users')
+          .doc(user.uid)
+          .get()
+          .then((profile) => {
+            if (profile.data()) {
+              history.push('/home');
+            } else {
+              history.push('/profile');
+            }
+          });
+      }
       console.log(user);
     } catch (e) {
-      console.log(e);
-      alert('Буруу код');
+      alert('Нууц код буруу байна.');
     }
+  };
+
+  const phoneNumberComponent = () => {
+    return (
+      <>
+        <div className='row'>
+          <form className='col s12'>
+            <div className='gap-top input-field col s12'>
+              <input
+                id='passwordNumber'
+                placeholder='Phone number'
+                type='number'
+                value={input}
+                onChange={(event) => {
+                  setInput(event.target.value);
+                }}
+              />
+            </div>
+          </form>
+        </div>
+        <a id='sign-in-button' />
+        <button
+          className='waves-effect waves-light btn'
+          onClick={sendConfirmCode}
+        >
+          Send code
+        </button>
+      </>
+    );
+  };
+
+  const sendCodeComponent = () => {
+    return (
+      <div>
+        <div className='row'>
+          <div className='col s12'>
+            <div className='input-field col s12'>
+              <input
+                placeholder='Pin'
+                type='text'
+                value={confirmCode}
+                onChange={(event) => {
+                  setConfirmCode(event.target.value);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        <div className='row'></div>
+        <div className='row valign-wrapper'>
+          <button
+            className='waves-effect waves-light btn'
+            onClick={verification}
+          >
+            Login
+          </button>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -52,41 +128,7 @@ const Login = () => {
       <div className='row'>
         <div className='col s12 m12'>
           <div className='card-panel grey lighten-4'>
-            <div className='row'>
-              <form className='col s12'>
-                <div className='gap-top input-field col s12'>
-                  <input
-                    placeholder='Phone number'
-                    type='number'
-                    value={input}
-                    onChange={(event) => {
-                      setInput(event.target.value);
-                    }}
-                  />
-                </div>
-              </form>
-            </div>
-            <div className='row'>
-              <form className='col s12'>
-                <div className='input-field col s12'>
-                  <input
-                    placeholder='Pin'
-                    type='text'
-                    value={confirmCode}
-                    onChange={(event) => {
-                      setConfirmCode(event.target.value);
-                    }}
-                  />
-                </div>
-              </form>
-            </div>
-
-            <div className='row'>
-              <p className='password right'>Forgot password?</p>
-            </div>
-            <div className='row valign-wrapper'>
-              <a className='waves-effect waves-light btn'>button</a>
-            </div>
+            {sentcode ? sendCodeComponent() : phoneNumberComponent()}
           </div>
         </div>
         <p className='Create center'>Create account</p>
